@@ -1,0 +1,4 @@
+
+
+class NoRequisitionError(Exception):
+	pass
