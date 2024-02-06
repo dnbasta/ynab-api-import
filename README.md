@@ -24,7 +24,10 @@ pip install ynab-api-import
 ### 2. Initiate Library
 ```py
 from ynabapiimport import YnabApiImport
-ynab_api_import = YnabApiImport(secret_id='<secret_id>', secret_key='<secret_key>', budget_id='<budget_id>', token='<token>')
+ynab_api_import = YnabApiImport(secret_id='<secret_id>', 
+                                secret_key='<secret_key>', 
+                                budget_id='<budget_id>', 
+                                token='<token>')
 ```
 Optionally you can initiate an object from a `config.yaml` file. To do that create a YAML file with the following content:
 ```yaml
