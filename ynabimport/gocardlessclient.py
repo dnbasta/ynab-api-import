@@ -8,24 +8,23 @@ from ynabimport.requisitionfetcher import RequisitionFetcher
 
 
 class GocardlessClient:
-	def __init__(self, secret_id: str, secret_key: str, institution_id: str):
-		self._institution_id = institution_id
+	def __init__(self, secret_id: str, secret_key: str):
 		self._client = NordigenClient(secret_key=secret_key, secret_id=secret_id)
 		self._client.generate_token()
-		self._account = RequisitionFetcher(client=self._client).fetch()
 
-	def fetch_transactions(self) -> List[Transaction]:
-		account = self._client.account_api(id=self._account)
+	def fetch_transactions(self, reference: str) -> List[Transaction]:
+		account_id = RequisitionFetcher(client=self._client).fetch(reference=reference)
+		account = self._client.account_api(id=account_id)
 		transaction_dicts = account.get_transactions()['transactions']['booked']
 		transactions = [Transaction.from_dict(t) for t in transaction_dicts]
 		return transactions
 
-	def create_requisition_auth_link(self) -> str:
-		init_session = self._client.initialize_session(institution_id=self._institution_id,
+	def create_requisition_auth_link(self, institution_id: str, reference: str) -> str:
+		init_session = self._client.initialize_session(institution_id=institution_id,
 													   redirect_uri='http://localhost:',
-													   reference_id=str(uuid4()))
+													   reference_id=f"{reference}::{uuid4()}")
 		return init_session.link
 
 	def get_institutions(self, countrycode: str) -> List[dict]:
 		institutions = self._client.institution.get_institutions(countrycode)
-		return [{'id': i['id'], 'name': i['name']} for i in institutions]
+		return [{'institution_id': i['id'], 'name': i['name']} for i in institutions]

@@ -1,24 +1,37 @@
 from pathlib import Path
+from typing import List
+
+import yaml
 
 from ynabimport.gocardlessclient import GocardlessClient
-from ynabimport.models.config import Config
 from ynabimport.ynabclient import YnabClient
 
 
 class YnabImport:
 
-	def __init__(self, config_path: str):
-		config = Config.from_path(Path(config_path))
-		self._gocardless_client = GocardlessClient(secret_id=config.secret_id,
-												   secret_key=config.secret_key,
-												   institution_id=config.institution_id)
-		self._ynab_client = YnabClient(token=config.token, budget_id=config.budget_id, account_id=config.account_id)
+	def __init__(self, secret_id: str, secret_key: str, budget_id: str, token: str):
+		self._gocardless_client = GocardlessClient(secret_id=secret_id,
+												   secret_key=secret_key)
+		self._ynab_client = YnabClient(token=token, budget_id=budget_id)
 
-	def run(self):
-		transactions = self._gocardless_client.fetch_transactions()
-		i = self._ynab_client.insert(transactions)
-		print(f"inserted {i} transactions")
+	@classmethod
+	def from_yaml(cls, path: str):
+		with Path(path).open('r') as f:
+			config_dict = yaml.safe_load(f)
+			return cls(secret_id=config_dict['secret_id'],
+					   secret_key=config_dict['secret_key'],
+					   budget_id=config_dict['budget_id'],
+					   token=config_dict['token'])
 
-	def fetch_requisition_auth_link(self):
-		auth_link = self._gocardless_client.create_requisition_auth_link()
+	def import_transactions(self, reference: str, account_id: str):
+		transactions = self._gocardless_client.fetch_transactions(reference=reference)
+		i = self._ynab_client.insert(transactions, account_id=account_id)
+		print(f"inserted {i} transactions for {reference} into account {account_id}")
+
+	def create_auth_link(self, institution_id: str, reference: str) -> str:
+		auth_link = self._gocardless_client.create_requisition_auth_link(institution_id=institution_id,
+																		 reference=reference)
 		return auth_link
+
+	def fetch_institutions(self, countrycode: str) -> List[dict]:
+		return self._gocardless_client.get_institutions(countrycode=countrycode)
