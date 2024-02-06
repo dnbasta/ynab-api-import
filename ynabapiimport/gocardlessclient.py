@@ -3,8 +3,8 @@ from uuid import uuid4
 
 from nordigen import NordigenClient
 
-from ynabimport.models.transaction import Transaction
-from ynabimport.requisitionfetcher import RequisitionFetcher
+from ynabapiimport.models.transaction import Transaction
+from ynabapiimport.requisitionfetcher import RequisitionFetcher
 
 
 class GocardlessClient:

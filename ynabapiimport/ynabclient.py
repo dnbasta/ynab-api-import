@@ -2,7 +2,7 @@ from typing import List
 
 import requests
 
-from ynabimport.models.transaction import Transaction
+from ynabapiimport.models.transaction import Transaction
 
 YNAB_BASE_URL = "https://api.ynab.com/v1"
 

@@ -3,11 +3,11 @@ from typing import List
 
 import yaml
 
-from ynabimport.gocardlessclient import GocardlessClient
-from ynabimport.ynabclient import YnabClient
+from ynabapiimport.gocardlessclient import GocardlessClient
+from ynabapiimport.ynabclient import YnabClient
 
 
-class YnabImport:
+class YnabApiImport:
 
 	def __init__(self, secret_id: str, secret_key: str, budget_id: str, token: str):
 		self._gocardless_client = GocardlessClient(secret_id=secret_id,

@@ -19,12 +19,12 @@ get to by clicking on 'Get API Keys' or clicking the link at the bottom of their
 ### 1. Install library from PyPI
 
 ```bash
-pip install ynab-import
+pip install ynab-api-import
 ```
 ### 2. Initiate Library
 ```py
-from ynabimport import YnabImport
-ynab_import = YnabImport(secret_id='<secret_id>', secret_key='<secret_key>', budget_id='<budget_id>', token='<token>')
+from ynabapiimport import YnabApiImport
+ynab_api_import = YnabApiImport(secret_id='<secret_id>', secret_key='<secret_key>', budget_id='<budget_id>', token='<token>')
 ```
 Optionally you can initiate an object from a `config.yaml` file. To do that create a YAML file with the following content:
 ```yaml
@@ -35,13 +35,13 @@ budget_id: <budget_id>
 ```
 Save the file and provide the path to the library when initializing
 ```py
-ynab_import = YnabImport.from_yaml('path/to/config.yaml')
+ynab_api_import = YnabApiImport.from_yaml('path/to/config.yaml')
 ```
 ### 2. Find the institution_id of your bank
 Countrycode is ISO 3166 two-character country code. 
 ```py
 
-ynab_import.fetch_institutions(countrycode='<countrycode>')
+ynab_api_import.fetch_institutions(countrycode='<countrycode>')
 ```
 You get back a dictionary with all available banks in that country and their institution_ids.
 Find and save the institution_id of your bank.
@@ -52,13 +52,13 @@ Find and save the institution_id of your bank.
 ### 3. Create Auth Link and authenticate with your bank
 Provide a unique reference (e.g. `'mycheckingaccount'`)  per bank account to identify the grant later on.
 ```py
-ynab_import.create_auth_link(institution_id='<institution_id', reference='<reference>')
+ynab_api_import.create_auth_link(institution_id='<institution_id', reference='<reference>')
 ```
 You get back a link which you need to copy to your browser and go through authentication flow with your bank
 
 ### 4. Run import with your reference and YNAB account_id
 ```py
-ynab_import.import_transactions(reference='<reference>', account_id='<account_id')
+ynab_api_import.import_transactions(reference='<reference>', account_id='<account_id')
 ```
 ## Development
 

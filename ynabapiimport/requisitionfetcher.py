@@ -1,7 +1,7 @@
 from nordigen import NordigenClient
 from requests import HTTPError
 
-from ynabimport.models.exceptions import NoRequisitionError
+from ynabapiimport.models.exceptions import NoRequisitionError
 
 
 class RequisitionFetcher:
