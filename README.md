@@ -1,4 +1,4 @@
-# ynab-import
+# ynab-api-import
 
 [![GitHub Release](https://img.shields.io/github/release/dnbasta/ynab-import?style=flat)]() 
 
