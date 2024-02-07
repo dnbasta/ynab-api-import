@@ -16,8 +16,13 @@ class Transaction:
 			payee = t_dict['creditorName']
 		else:
 			payee = t_dict['debtorName']
+
+		memo = ''
+		if 'remittanceInformationUnstructured' in t_dict:
+			memo = t_dict['remittanceInformationUnstructured']
+
 		return cls(import_id=t_dict['transactionId'],
-				   memo=t_dict['remittanceInformationUnstructured'],
+				   memo=memo,
 				   payee_name=payee,
 				   amount=int(float(t_dict['transactionAmount']['amount']) * 1000),
 				   transaction_date=t_dict['valueDate'])
