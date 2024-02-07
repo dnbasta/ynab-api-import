@@ -3,7 +3,7 @@
 [![GitHub Release](https://img.shields.io/github/release/dnbasta/ynab-api-import?style=flat)]() 
 
 This library enables importing YNAB transactions via the 
-[Gocardless Bank Account Data API (formerly Nordigen)](https://gocardless.com/bank-account-data/).
+[Gocardless Bank Account Data API (formerly Nordigen)](https://gocardless.com/bank-account-data/). It can be helpful for cases in which your bank is not covered by YNABs native import functionality 
 
 ## Preparations
 ### Gocardless Bank Account API (formerly Nordigen)
