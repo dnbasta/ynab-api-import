@@ -13,7 +13,6 @@ get to by clicking on 'Get API Keys' or clicking the link at the bottom of their
 3. Go to Developers -> User Secrets and create a new pair of secret_id and secret_key
 ### YNAB
 1. Create a personal access token for YNAB as described [here](https://api.ynab.com/)
-2. Get your target budget & account IDs. You can find the IDs if you go to https://app.ynab.com/ and open the target account by clicking on the name on the left hand side menu. The URL does now contain both IDs https://app.ynab.com/<budget_id>/accounts/<account_id>
 
 ## Usage
 ### 1. Install library from PyPI
@@ -26,7 +25,6 @@ pip install ynab-api-import
 from ynabapiimport import YnabApiImport
 ynab_api_import = YnabApiImport(secret_id='<secret_id>', 
                                 secret_key='<secret_key>', 
-                                budget_id='<budget_id>', 
                                 token='<token>')
 ```
 Optionally you can initiate an object from a `config.yaml` file. To do that create a YAML file with the following content:
@@ -34,7 +32,6 @@ Optionally you can initiate an object from a `config.yaml` file. To do that crea
 secret_id: <secret_id>
 secret_key: <secret_key>
 token: <ynab_token>
-budget_id: <budget_id>
 ```
 Save the file and provide the path to the library when initializing
 ```py
@@ -59,9 +56,12 @@ ynab_api_import.create_auth_link(institution_id='<institution_id', reference='<r
 ```
 You get back a link which you need to copy to your browser and go through authentication flow with your bank
 
-### 4. Run import with your reference and YNAB account_id
+### 4. Run import with your reference and YNAB identifiers
+You can find the IDs of your budget and the account if you go to https://app.ynab.com/ and open the target account by clicking on the name on the left hand side menu. The URL does now contain both IDs https://app.ynab.com/<budget_id>/accounts/<account_id>
 ```py
-ynab_api_import.import_transactions(reference='<reference>', account_id='<account_id')
+ynab_api_import.import_transactions(reference='<reference>', 
+                                    budget_id='<budget_id>', 
+                                    account_id='<account_id')
 ```
 ## Development
 

@@ -9,10 +9,10 @@ from ynabapiimport.ynabclient import YnabClient
 
 class YnabApiImport:
 
-	def __init__(self, secret_id: str, secret_key: str, budget_id: str, token: str):
+	def __init__(self, secret_id: str, secret_key: str, token: str):
 		self._gocardless_client = GocardlessClient(secret_id=secret_id,
 												   secret_key=secret_key)
-		self._ynab_client = YnabClient(token=token, budget_id=budget_id)
+		self._ynab_client = YnabClient(token=token)
 
 	@classmethod
 	def from_yaml(cls, path: str):
@@ -20,12 +20,11 @@ class YnabApiImport:
 			config_dict = yaml.safe_load(f)
 			return cls(secret_id=config_dict['secret_id'],
 					   secret_key=config_dict['secret_key'],
-					   budget_id=config_dict['budget_id'],
 					   token=config_dict['token'])
 
-	def import_transactions(self, reference: str, account_id: str):
+	def import_transactions(self, reference: str, budget_id: str, account_id: str):
 		transactions = self._gocardless_client.fetch_transactions(reference=reference)
-		i = self._ynab_client.insert(transactions, account_id=account_id)
+		i = self._ynab_client.insert(transactions, account_id=account_id, budget_id=budget_id)
 		print(f"inserted {i} transactions for {reference} into account {account_id}")
 
 	def create_auth_link(self, institution_id: str, reference: str) -> str:
