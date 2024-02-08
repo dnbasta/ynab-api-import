@@ -20,6 +20,7 @@ class GocardlessClient:
 		return transactions
 
 	def create_requisition_auth_link(self, institution_id: str, reference: str) -> str:
+		self.delete_inactive_requisitions(reference=reference)
 		init_session = self._client.initialize_session(institution_id=institution_id,
 													   redirect_uri='http://localhost:',
 													   reference_id=f"{reference}::{uuid4()}")
@@ -28,3 +29,9 @@ class GocardlessClient:
 	def get_institutions(self, countrycode: str) -> List[dict]:
 		institutions = self._client.institution.get_institutions(countrycode)
 		return [{'institution_id': i['id'], 'name': i['name']} for i in institutions]
+
+	def delete_inactive_requisitions(self, reference: str):
+		results = self._client.requisition.get_requisitions()['results']
+		inactive_requisitions = [r['id'] for r in results
+								 if r['status'] != 'LN' and r['reference'].split('::')[0] == reference]
+		[self._client.requisition.delete_requisition(ir) for ir in inactive_requisitions]
