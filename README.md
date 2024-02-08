@@ -50,7 +50,7 @@ Find and save the institution_id of your bank.
 ```
 
 ### 3. Create Auth Link and authenticate with your bank
-Provide a unique reference (e.g. `'mycheckingaccount'`)  per bank account to identify the grant later on.
+Provide a unique reference (e.g. `'mycheckingaccount'`)  per bank connection to identify the grant later on.
 ```py
 ynab_api_import.create_auth_link(institution_id='<institution_id', reference='<reference>')
 ```
@@ -60,6 +60,16 @@ You get back a link which you need to copy to your browser and go through authen
 You can find the IDs of your budget and the account if you go to https://app.ynab.com/ and open the target account by clicking on the name on the left hand side menu. The URL does now contain both IDs https://app.ynab.com/<budget_id>/accounts/<account_id>
 ```py
 ynab_api_import.import_transactions(reference='<reference>', 
+                                    budget_id='<budget_id>', 
+                                    account_id='<account_id')
+```
+## Handling of multiple or no active accounts in your bank connection
+The library assumes that you have one active account in your bank connection. It will raise an error if there are
+no active accounts in your connection or more than one. In the latter case you need to provide the correct `resource_id`
+in your call. You can find the `resource_id` by looking into the available options in the error message.
+```py
+ynab_api_import.import_transactions(resource_id='<resource_id>',
+                                    reference='<reference>', 
                                     budget_id='<budget_id>', 
                                     account_id='<account_id')
 ```
