@@ -3,8 +3,8 @@ from uuid import uuid4
 
 from nordigen import NordigenClient
 
+from ynabapiimport.accountfetcher import AccountFetcher
 from ynabapiimport.models.transaction import Transaction
-from ynabapiimport.requisitionfetcher import RequisitionFetcher
 
 
 class GocardlessClient:
@@ -12,8 +12,14 @@ class GocardlessClient:
 		self._client = NordigenClient(secret_key=secret_key, secret_id=secret_id)
 		self._client.generate_token()
 
-	def fetch_transactions(self, reference: str) -> List[Transaction]:
-		account_id = RequisitionFetcher(client=self._client).fetch(reference=reference)
+	def fetch_transactions(self, reference: str, resource_id: str) -> List[Transaction]:
+		af = AccountFetcher(client=self._client, reference=reference)
+
+		if resource_id:
+			account_id = af.fetch(resource_id=resource_id)
+		else:
+			account_id = af.fetch()
+
 		account = self._client.account_api(id=account_id)
 		transaction_dicts = account.get_transactions()['transactions']['booked']
 		transactions = [Transaction.from_dict(t) for t in transaction_dicts]

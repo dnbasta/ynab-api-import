@@ -22,8 +22,8 @@ class YnabApiImport:
 					   secret_key=config_dict['secret_key'],
 					   token=config_dict['token'])
 
-	def import_transactions(self, reference: str, budget_id: str, account_id: str):
-		transactions = self._gocardless_client.fetch_transactions(reference=reference)
+	def import_transactions(self, reference: str, budget_id: str, account_id: str, resource_id: str = None):
+		transactions = self._gocardless_client.fetch_transactions(reference=reference, resource_id=resource_id)
 		i = self._ynab_client.insert(transactions, account_id=account_id, budget_id=budget_id)
 		print(f"inserted {i} transactions for {reference} into account {account_id}")
 
