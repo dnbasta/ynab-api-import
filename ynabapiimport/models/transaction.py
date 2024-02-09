@@ -4,7 +4,7 @@ from datetime import date
 
 @dataclass(eq=True, frozen=True)
 class Transaction:
-	transaction_date: date
+	transaction_date: str
 	memo: str
 	payee_name: str
 	import_id: str
