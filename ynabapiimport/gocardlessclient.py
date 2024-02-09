@@ -15,7 +15,7 @@ class GocardlessClient:
 		self._client.generate_token()
 		self.reference = reference
 
-	def fetch_transactions(self, resource_id: str, startdate: date) -> List[Transaction]:
+	def fetch_transactions(self, resource_id: str = None, startdate: date = None) -> List[Transaction]:
 		af = AccountFetcher(client=self._client, reference=self.reference)
 
 		if resource_id:
