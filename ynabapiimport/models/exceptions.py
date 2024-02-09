@@ -10,3 +10,11 @@ class NoActiveAccountError(Exception):
 
 class MultipleActiveAccountsError(Exception):
 	pass
+
+
+class ReferenceNotUnique(Exception):
+	pass
+
+
+class ReferenceNotValid(Exception):
+	pass
