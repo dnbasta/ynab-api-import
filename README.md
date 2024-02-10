@@ -15,7 +15,7 @@ get to by clicking on 'Get API Keys' or clicking the link at the bottom of their
 ### YNAB
 1. Create a personal access token for YNAB as described [here](https://api.ynab.com/)
 
-## Usage
+## Basic Usage
 ### 1. Install library from PyPI
 
 ```bash
@@ -65,11 +65,12 @@ ynab_api_import.create_auth_link(institution_id='<institution_id>')
 ```
 
 ### 4. Run import with your reference and YNAB identifiers
-Optionally you can provide a `startdate` argument in form of a `datetime.date` object to only import transactions from a specific date onwards. 
+Optionally you can provide a `startdate` argument in form of a `datetime.date` object to only import transactions from a specific date onwards. Equally optionally you can provide a `memo_regex` argument in from of a regex string to the call to clean the memo string before importing into YNAB. A good helper to write your regex is https://regex101.com  
 ```py
 ynab_api_import.import_transactions()
 ```
-## Handling of multiple accounts in your bank connection (`MultipleAccountsError`)
+## Advanced Usage
+### Handling of multiple accounts in your bank connection (`MultipleAccountsError`)
 The library assumes that you have one active account in your bank connection. It will raise an error if there are no accounts in your connection or more than one. In the latter case you need to provide the correct `resource_id` when initializing the library. You can find the `resource_id` by looking into the available options in the error message.
 ```py
 from ynabapiimport import YnabApiImport
@@ -80,6 +81,15 @@ ynab_api_import = YnabApiImport(resource_id='<resource_id>',
                                 token='<ynab_token>',
                                 budget_id='<budget_id>',
                                 account_id='<account_id>')
+```
+### Testing your `memo_regex`
+You can test your `memo_regex` with a call to `test_memo_regex()`. The function will fetch transactions from your bank account, apply the regex and output the old and new memo strings in a dict for inspection
+```py
+ynab_api_import.test_memo_regex(memo_regex=r'<memo_regex')
+```
+prints and returns a list with following content
+```
+[{original_memo: cleaned_memo}]
 ```
 ## Development
 
