@@ -1,3 +1,4 @@
+import json
 from datetime import date
 from pathlib import Path
 from typing import List
@@ -5,6 +6,7 @@ from typing import List
 import yaml
 
 from ynabapiimport.gocardlessclient import GocardlessClient
+from ynabapiimport.memocleaner import MemoCleaner
 from ynabapiimport.ynabclient import YnabClient
 
 
@@ -35,8 +37,13 @@ class YnabApiImport:
 					   account_id=config_dict['account_id'],
 					   resource_id=resource_id)
 
-	def import_transactions(self, resource_id: str = None, startdate: date = None):
-		transactions = self._gocardless_client.fetch_transactions(resource_id=resource_id, startdate=startdate)
+	def import_transactions(self, startdate: date = None, memo_regex: str = None):
+		transactions = self._gocardless_client.fetch_transactions(startdate=startdate)
+
+		if memo_regex:
+			mc = MemoCleaner(memo_regex=memo_regex)
+			transactions = [mc.clean(t) for t in transactions]
+
 		i = self._ynab_client.insert(transactions)
 		print(f"inserted {i} transactions for {self._gocardless_client.reference}")
 
@@ -46,3 +53,12 @@ class YnabApiImport:
 
 	def fetch_institutions(self, countrycode: str) -> List[dict]:
 		return self._gocardless_client.get_institutions(countrycode=countrycode)
+
+	def test_memo_regex(self, memo_regex: str) -> List[dict]:
+		transactions = self._gocardless_client.fetch_transactions()
+		mc = MemoCleaner(memo_regex=memo_regex)
+		r = [{t.memo: mc.clean(t).memo} for t in transactions]
+		print('results of applied regex to memo in form of: [{original_memo: cleaned_memo}]')
+		print(json.dumps(r, indent=4))
+		return r
+
