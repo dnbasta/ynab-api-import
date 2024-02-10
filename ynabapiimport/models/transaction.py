@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import date
 
 
-@dataclass(eq=True, frozen=True)
+@dataclass
 class Transaction:
 	transaction_date: str
 	memo: str
@@ -14,13 +14,13 @@ class Transaction:
 	def from_dict(cls, t_dict: dict):
 		payee = None
 		if 'creditorName' in t_dict:
-			payee = t_dict['creditorName']
+			payee = t_dict['creditorName'].strip()
 		elif 'debtorName' in t_dict:
-			payee = t_dict['debtorName']
+			payee = t_dict['debtorName'].strip()
 
 		memo = None
 		if 'remittanceInformationUnstructured' in t_dict:
-			memo = t_dict['remittanceInformationUnstructured'].replace('\n', ' ')[:127]
+			memo = str(' '.join(t_dict['remittanceInformationUnstructured'].replace('\n', ' ')[:127].strip().split()))
 
 		return cls(import_id=t_dict['internalTransactionId'],
 				   memo=memo,
