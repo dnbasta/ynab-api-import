@@ -10,16 +10,17 @@ from ynabapiimport.models.transaction import Transaction
 
 
 class GocardlessClient:
-	def __init__(self, secret_id: str, secret_key: str, reference: str):
+	def __init__(self, secret_id: str, secret_key: str, reference: str, resource_id: str = None):
 		self._client = NordigenClient(secret_key=secret_key, secret_id=secret_id)
 		self._client.generate_token()
 		self.reference = reference
+		self.resource_id = resource_id
 
-	def fetch_transactions(self, resource_id: str = None, startdate: date = None) -> List[Transaction]:
+	def fetch_transactions(self, startdate: date = None) -> List[Transaction]:
 		af = AccountFetcher(client=self._client, reference=self.reference)
 
-		if resource_id:
-			account_id = af.fetch(resource_id=resource_id)
+		if self.resource_id:
+			account_id = af.fetch(resource_id=self.resource_id)
 		else:
 			account_id = af.fetch()
 

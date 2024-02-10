@@ -69,10 +69,17 @@ Optionally you can provide a `startdate` argument in form of a `datetime.date` o
 ```py
 ynab_api_import.import_transactions()
 ```
-## Handling of multiple or no active accounts in your bank connection
-The library assumes that you have one active account in your bank connection. It will raise an error if there are no active accounts in your connection or more than one. In the latter case you need to provide the correct `resource_id` in your call. You can find the `resource_id` by looking into the available options in the error message.
+## Handling of multiple accounts in your bank connection (`MultipleAccountsError`)
+The library assumes that you have one active account in your bank connection. It will raise an error if there are no accounts in your connection or more than one. In the latter case you need to provide the correct `resource_id` when initializing the library. You can find the `resource_id` by looking into the available options in the error message.
 ```py
-ynab_api_import.import_transactions(resource_id='<resource_id>')
+from ynabapiimport import YnabApiImport
+ynab_api_import = YnabApiImport(resource_id='<resource_id>',
+                                secret_id='<secret_id>', 
+                                secret_key='<secret_key>',
+                                reference='<reference>',
+                                token='<ynab_token>',
+                                budget_id='<budget_id>',
+                                account_id='<account_id>')
 ```
 ## Development
 

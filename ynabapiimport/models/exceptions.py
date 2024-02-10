@@ -4,11 +4,11 @@ class NoRequisitionError(Exception):
 	pass
 
 
-class NoActiveAccountError(Exception):
+class NoAccountError(Exception):
 	pass
 
 
-class MultipleActiveAccountsError(Exception):
+class MultipleAccountsError(Exception):
 	pass
 
 
