@@ -24,11 +24,12 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install poetry pytest
-        poetry install
+        pip install poetry
         poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
+        poetry install
+        poetry add pytest
     - name: Test
-      run: poetry run pytest
+      run: poetry run pytest tests
     - name: Build
       run: |
         poetry version $(git describe --tags --abbrev=0)
