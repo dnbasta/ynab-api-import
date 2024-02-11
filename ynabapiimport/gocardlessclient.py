@@ -25,12 +25,13 @@ class GocardlessClient:
 			account_id = af.fetch()
 
 		account = self._client.account_api(id=account_id)
-		transaction_dicts = account.get_transactions()['transactions']['booked']
-		transactions = [Transaction.from_dict(t) for t in transaction_dicts]
 
 		if startdate:
-			transactions = [t for t in transactions if t.transaction_date >= date.strftime(startdate, '%Y-%m-%d')]
+			transaction_dicts = account.get_transactions(date_from=date.strftime(startdate, '%Y-%m-%d'))
+		else:
+			transaction_dicts = account.get_transactions()
 
+		transactions = [Transaction.from_dict(t) for t in transaction_dicts['transactions']['booked']]
 		return transactions
 
 	def create_requisition_auth_link(self, institution_id: str) -> str:
