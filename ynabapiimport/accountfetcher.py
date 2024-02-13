@@ -31,7 +31,7 @@ class AccountFetcher:
 			return self.fetch_by_resource_id(resource_id=resource_id, account_dicts=account_dicts)
 		if len(account_dicts) > 1:
 			raise MultipleAccountsError(f"There are multiple active accounts available in active requisition. "
-											  f"Please provide resourceId in import_transaction() call. Available accounts: {account_dicts}")
+											  f"Please provide one of the following resourceId when initializing library.", account_dicts)
 		return next(a['account_id'] for a in account_dicts)
 
 	def fetch_requisition(self) -> dict:
