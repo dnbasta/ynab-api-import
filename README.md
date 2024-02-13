@@ -6,6 +6,8 @@ This library enables importing YNAB transactions via the
 [Gocardless Bank Account Data API (formerly Nordigen)](https://gocardless.com/bank-account-data/). 
 It can be helpful for cases in which your bank is not covered by YNABs native import functionality.
 
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/dnbasta)
+
 ## Preparations
 ### Gocardless Bank Account API (formerly Nordigen)
 1. [Check](https://gocardless.com/bank-account-data/coverage/) if your bank is supported by the API.
@@ -91,6 +93,5 @@ prints and returns a list with following content
 ```
 [{original_memo: cleaned_memo}]
 ```
-## Support
 
-[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/dnbasta)
+
