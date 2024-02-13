@@ -15,7 +15,7 @@ class AccountFetcher:
 	@staticmethod
 	def fetch_by_resource_id(resource_id: str, account_dicts: List[dict]) -> str:
 		try:
-			return next(a['id'] for a in account_dicts if a['resourceId'] == resource_id)
+			return next(a['account_id'] for a in account_dicts if a['resourceId'] == resource_id)
 		except StopIteration:
 			raise NoAccountError(f"No active account with resource_id. Available accounts: {account_dicts}")
 
@@ -23,7 +23,7 @@ class AccountFetcher:
 		req = self.fetch_requisition()
 
 		account_dicts = [{**self._client.account_api(id=a).get_details()['account'],
-						  **{'id': a}} for a in req['accounts']]
+						  **{'account_id': a}} for a in req['accounts']]
 
 		if len(account_dicts) == 0:
 			raise NoAccountError('No active accounts available in active requisition')
@@ -32,7 +32,7 @@ class AccountFetcher:
 		if len(account_dicts) > 1:
 			raise MultipleAccountsError(f"There are multiple active accounts available in active requisition. "
 											  f"Please provide resourceId in import_transaction() call. Available accounts: {account_dicts}")
-		return next(a['id'] for a in account_dicts)
+		return next(a['account_id'] for a in account_dicts)
 
 	def fetch_requisition(self) -> dict:
 		try:
