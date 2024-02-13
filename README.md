@@ -91,6 +91,6 @@ prints and returns a list with following content
 ```
 [{original_memo: cleaned_memo}]
 ```
-## Development
+## Support
 
-Read the [CONTRIBUTING.md](CONTRIBUTING.md) file.
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/dnbasta)
