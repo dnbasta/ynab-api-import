@@ -12,8 +12,7 @@ It can be helpful for cases in which your bank is not covered by YNABs native im
 ## Preparations
 ### Gocardless Bank Account API (formerly Nordigen)
 1. [Check](https://gocardless.com/bank-account-data/coverage/) if your bank is supported by the API.
-2. Create an account with Gocardless for the Bank Account Data API (They have a separate Login for it which you can 
-get to by clicking on 'Get API Keys' or clicking the link at the bottom of their standard login page)
+2. Create an account with Gocardless for the Bank Account Data API (They have a separate Login for it which you can get to by clicking on 'Get API Keys' or clicking the link at the bottom of their standard login page)
 3. Go to Developers -> User Secrets and create a new pair of secret_id and secret_key
 ### YNAB
 1. Create a personal access token for YNAB as described [here](https://api.ynab.com/)
@@ -86,9 +85,7 @@ ynab_api_import = YnabApiImport(resource_id='<resource_id>',
                                 account_id='<account_id>')
 ```
 ### Show Logs
-The library logs information about the result of the methods on the 'INFO' level. If you want to see these logs import
-the logging module and set it to the level `INFO`. You can also access the logger for advanced configuration via the  
-`logger` attribute of your `YnabApiImport`instance.
+The library logs information about the result of the methods on the 'INFO' level. If you want to see these logs import the logging module and set it to the level `INFO`. You can also access the logger for advanced configuration via the `logger` attribute of your `YnabApiImport`instance.
 ```py
 import logging
 
