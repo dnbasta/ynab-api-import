@@ -52,17 +52,19 @@ class YnabApiImport:
 
 	def create_auth_link(self, institution_id: str) -> str:
 		auth_link = self._gocardless_client.create_requisition_auth_link(institution_id=institution_id)
+		self.logger.info(f'created auth link for {institution_id} under reference {self._gocardless_client.reference}')
 		return auth_link
 
 	def fetch_institutions(self, countrycode: str) -> List[dict]:
-		return self._gocardless_client.get_institutions(countrycode=countrycode)
+		institutions = self._gocardless_client.get_institutions(countrycode=countrycode)
+		self.logger.info(f'fetched list with {len(institutions)} institutions for countrycode {countrycode}')
+		return institutions
 
 	def test_memo_regex(self, memo_regex: str) -> List[dict]:
 		transactions = self._gocardless_client.fetch_transactions()
 		mc = MemoCleaner(memo_regex=memo_regex)
 		r = [{t.memo: mc.clean(t).memo} for t in transactions]
-		self.logger.info('results of applied regex to memo in form of: [{original_memo: cleaned_memo}]')
-		self.logger.info(json.dumps(r, indent=4))
+		self.logger.info(f'tested memo regex on {len(r)} transactions from {self._gocardless_client.reference}')
 		return r
 
 	@staticmethod
