@@ -85,12 +85,21 @@ ynab_api_import = YnabApiImport(resource_id='<resource_id>',
                                 budget_id='<budget_id>',
                                 account_id='<account_id>')
 ```
+### Show Logs
+The library logs information about the result of the methods on the 'INFO' level. If you want to see these logs import
+the logging module and set it to the level `INFO`. You can also access the logger for advanced configuration via the  
+`logger` attribute of your `YnabApiImport`instance.
+```py
+import logging
+
+logging.basicConfig(level='INFO')
+```
 ### Testing your `memo_regex`
 You can test your `memo_regex` with a call to `test_memo_regex()`. The function will fetch transactions from your bank account, apply the regex and output the old and new memo strings in a dict for inspection
 ```py
 ynab_api_import.test_memo_regex(memo_regex=r'<memo_regex')
 ```
-prints and returns a list with following content
+returns a list of `dict` with following content
 ```
 [{original_memo: cleaned_memo}]
 ```

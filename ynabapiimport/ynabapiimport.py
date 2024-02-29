@@ -1,4 +1,5 @@
 import json
+import logging
 from datetime import date
 from pathlib import Path
 from typing import List
@@ -14,6 +15,7 @@ class YnabApiImport:
 
 	def __init__(self, secret_id: str, secret_key: str, token: str,
 				 reference: str, budget_id: str, account_id: str, resource_id: str = None) -> None:
+		self.logger = self._set_up_logger()
 		self._gocardless_client = GocardlessClient(secret_id=secret_id,
 												   secret_key=secret_key,
 												   reference=reference,
@@ -45,7 +47,7 @@ class YnabApiImport:
 			transactions = [mc.clean(t) for t in transactions]
 
 		i = self._ynab_client.insert(transactions)
-		print(f"inserted {i} transactions for {self._gocardless_client.reference}")
+		self.logger.info(f"inserted {i} transactions for {self._gocardless_client.reference}")
 
 	def create_auth_link(self, institution_id: str) -> str:
 		auth_link = self._gocardless_client.create_requisition_auth_link(institution_id=institution_id)
@@ -58,7 +60,13 @@ class YnabApiImport:
 		transactions = self._gocardless_client.fetch_transactions()
 		mc = MemoCleaner(memo_regex=memo_regex)
 		r = [{t.memo: mc.clean(t).memo} for t in transactions]
-		print('results of applied regex to memo in form of: [{original_memo: cleaned_memo}]')
-		print(json.dumps(r, indent=4))
+		self.logger.info('results of applied regex to memo in form of: [{original_memo: cleaned_memo}]')
+		self.logger.info(json.dumps(r, indent=4))
 		return r
 
+	@staticmethod
+	def _set_up_logger() -> logging.Logger:
+		parent_name = '.'.join(__name__.split('.')[:-1])
+		logger = logging.getLogger(parent_name)
+		logger.setLevel(20)
+		return logger
