@@ -39,7 +39,7 @@ class YnabApiImport:
 					   account_id=config_dict['account_id'],
 					   resource_id=resource_id)
 
-	def import_transactions(self, startdate: date = None, memo_regex: str = None):
+	def import_transactions(self, startdate: date = None, memo_regex: str = None) -> int:
 		transactions = self._gocardless_client.fetch_transactions(startdate=startdate)
 
 		if memo_regex:
@@ -48,6 +48,7 @@ class YnabApiImport:
 
 		i = self._ynab_client.insert(transactions)
 		self.logger.info(f"inserted {i} transactions for {self._gocardless_client.reference}")
+		return i
 
 	def create_auth_link(self, institution_id: str) -> str:
 		auth_link = self._gocardless_client.create_requisition_auth_link(institution_id=institution_id)
