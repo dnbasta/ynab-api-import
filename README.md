@@ -94,6 +94,12 @@ ynab_api_import = YnabApiImport(resource_id='<resource_id>',
                                 budget_id='<budget_id>',
                                 account_id='<account_id>')
 ```
+### Delete current bank authorization
+By default you can create only one bank authorization per reference. If you need to replace the authorization under your 
+current reference you can explicitly do that by calling the following function.
+```py
+ynab_api_import.delete_currrent_auth()
+```
 ### Show Logs
 The library logs information about the result of the methods on the 'INFO' level. If you want to see these logs 
 import the logging module and set it to the level `INFO`. You can also access the logger for advanced configuration 

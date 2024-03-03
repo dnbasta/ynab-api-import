@@ -1,16 +1,16 @@
 from typing import List
 
 from nordigen import NordigenClient
-from requests import HTTPError
 
-from ynabapiimport.models.exceptions import NoAccountError, MultipleAccountsError, NoRequisitionError
+from ynabapiimport.models.exceptions import NoAccountError, MultipleAccountsError
+from ynabapiimport.requisitionhandler import RequisitionHandler
 
 
 class AccountFetcher:
 
 	def __init__(self, client: NordigenClient, reference: str):
 		self._client = client
-		self._reference = reference
+		self._requisitionhandler = RequisitionHandler(reference=reference, client=client)
 
 	@staticmethod
 	def fetch_by_resource_id(resource_id: str, account_dicts: List[dict]) -> str:
@@ -20,7 +20,7 @@ class AccountFetcher:
 			raise NoAccountError(f"No active account with resource_id. Available accounts: {account_dicts}")
 
 	def fetch(self, resource_id: str = None) -> str:
-		req = self.fetch_requisition()
+		req = self._requisitionhandler.fetch_requisition()
 
 		account_dicts = [{**self._client.account_api(id=a).get_details()['account'],
 						  **{'account_id': a}} for a in req['accounts']]
@@ -33,10 +33,3 @@ class AccountFetcher:
 			raise MultipleAccountsError(f"There are multiple active accounts available in active requisition. "
 											  f"Please provide one of the following resourceId when initializing library.", account_dicts)
 		return next(a['account_id'] for a in account_dicts)
-
-	def fetch_requisition(self) -> dict:
-		try:
-			results = self._client.requisition.get_requisitions()['results']
-			return next(r for r in results if r['status'] == 'LN' and r['reference'].split('::')[0] == self._reference)
-		except (HTTPError, StopIteration):
-			raise NoRequisitionError()
