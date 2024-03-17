@@ -3,11 +3,11 @@
 [![GitHub Release](https://img.shields.io/github/release/dnbasta/ynab-api-import?style=flat)]() 
 [![Github Release](https://img.shields.io/maintenance/yes/2100)]()
 
+[!["Buy Me A Coffee"](https://img.shields.io/badge/Buy_Me_A_Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/dnbasta)
+
 This library enables importing YNAB transactions via the 
 [Gocardless Bank Account Data API (formerly Nordigen)](https://gocardless.com/bank-account-data/). 
-It can be helpful for cases in which your bank is not covered by YNABs native import functionality.
-
-[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/dnbasta)
+It is pretty helpful for cases in which your bank is not covered by YNABs native import functionality.
 
 ## Preparations
 ### Gocardless Bank Account API (formerly Nordigen)
