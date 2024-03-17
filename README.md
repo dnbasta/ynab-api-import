@@ -58,10 +58,10 @@ Countrycode is ISO 3166 two-character country code.
 
 ynab_api_import.fetch_institutions(countrycode='<countrycode>')
 ```
-You get back a dictionary with all available banks in that country and their institution_ids.
-Find and save the institution_id of your bank.
+You get back a dictionary with all available banks in that country, their institution_ids and the maximum days of 
+transaction history provided by the bank. Find and save the institution_id of your bank.
 ```py
-[{'name': '<name>', 'institution_id': '<institution_id>'}]
+[{'name': '<name>', 'institution_id': '<institution_id>', 'max_history_days': 'ddd'}]
 ```
 
 ### 3. Create Auth Link and authenticate with your bank

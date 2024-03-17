@@ -27,10 +27,14 @@ class RequisitionHandler:
 		self.reference_is_unique(req_list=req_list)
 		self.reference_is_valid()
 
+		# get max days for institution
+		institution_dict = self._client.institution.get_institution_by_id(institution_id)
+		transaction_total_days = institution_dict['transaction_total_days']
+
 		init_session = self._client.initialize_session(institution_id=institution_id,
 													   redirect_uri='http://localhost:',
 													   reference_id=f"{self._reference}::{uuid4()}",
-													   max_historical_days=730)
+													   max_historical_days=transaction_total_days)
 		return init_session.link
 
 	def delete_inactive_requisitions(self, req_list: List[dict]):
@@ -55,4 +59,5 @@ class RequisitionHandler:
 
 	def get_institutions(self, countrycode: str) -> List[dict]:
 		institutions = self._client.institution.get_institutions(countrycode)
-		return [{'institution_id': i['id'], 'name': i['name']} for i in institutions]
+		return [{'institution_id': i['id'], 'name': i['name'], 'max_history_days': i['transaction_total_days']}
+				for i in institutions]
