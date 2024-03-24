@@ -1,5 +1,4 @@
 from typing import List
-from urllib.error import HTTPError
 from uuid import uuid4
 
 from nordigen import NordigenClient
@@ -14,11 +13,20 @@ class RequisitionHandler:
 		self._reference = reference
 
 	def fetch_requisition(self) -> dict:
-		try:
-			results = self._client.requisition.get_requisitions()['results']
-			return next(r for r in results if r['status'] == 'LN' and r['reference'].split('::')[0] == self._reference)
-		except (HTTPError, StopIteration):
-			raise NoRequisitionError()
+
+		results = self._client.requisition.get_requisitions()['results']
+		reqs = [r for r in results if r['reference'].split('::')[0] == self._reference]
+		if not reqs:
+			raise NoRequisitionError(f"No requisition found for {self._reference}")
+		else:
+			try:
+				return next(r for r in reqs if r['status'] == 'LN')
+			except StopIteration:
+				try:
+					r = next(r for r in reqs if r['status'] == 'EX')
+					raise NoRequisitionError("Requisition expired")
+				except StopIteration:
+					raise NoRequisitionError(f"Requisition not valid. Current status: {[r['status'] for r in reqs]}'")
 
 	def create_requisition_auth_link(self, institution_id: str) -> str:
 		req_list = self._client.requisition.get_requisitions()['results']
