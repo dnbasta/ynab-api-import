@@ -56,16 +56,16 @@ class YnabApiImport:
 		self.logger.info(f"inserted {i} transactions for {self._reference}")
 		return i
 
-	def create_auth_link(self, institution_id: str) -> str:
+	def create_auth_link(self, institution_id: str, use_max_historical_days: bool = False,
+						 delete_current_auth: bool = False) -> str:
 		rh = RequisitionHandler(client=self._gocardless_client, reference=self._reference)
-		auth_link = rh.create_requisition_auth_link(institution_id=institution_id)
+		if delete_current_auth:
+			rh.delete_current_requisition()
+			self.logger.info(f'deleted auth for reference {self._reference}')
+		auth_link = rh.create_requisition_auth_link(institution_id=institution_id,
+													use_max_historical_days=use_max_historical_days)
 		self.logger.info(f'created auth link for {institution_id} under reference {self._reference}')
 		return auth_link
-
-	def delete_current_auth(self):
-		rh = RequisitionHandler(client=self._gocardless_client, reference=self._reference)
-		rh.delete_current_requisition()
-		self.logger.info(f'deleted auth for reference {self._reference}')
 
 	def fetch_institutions(self, countrycode: str) -> List[dict]:
 		rh = RequisitionHandler(client=self._gocardless_client, reference=self._reference)

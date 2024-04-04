@@ -28,7 +28,7 @@ class RequisitionHandler:
 				except StopIteration:
 					raise NoRequisitionError(f"Requisition not valid. Current status: {[r['status'] for r in reqs]}'")
 
-	def create_requisition_auth_link(self, institution_id: str) -> str:
+	def create_requisition_auth_link(self, institution_id: str, use_max_historical_days: bool) -> str:
 		req_list = self._client.requisition.get_requisitions()['results']
 
 		self.delete_inactive_requisitions(req_list=req_list)
@@ -36,8 +36,10 @@ class RequisitionHandler:
 		self.reference_is_valid()
 
 		# get max days for institution
-		institution_dict = self._client.institution.get_institution_by_id(institution_id)
-		transaction_total_days = institution_dict['transaction_total_days']
+		transaction_total_days = 90
+		if use_max_historical_days:
+			institution_dict = self._client.institution.get_institution_by_id(institution_id)
+			transaction_total_days = institution_dict['transaction_total_days']
 
 		init_session = self._client.initialize_session(institution_id=institution_id,
 													   redirect_uri='http://localhost:',
