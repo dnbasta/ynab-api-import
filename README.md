@@ -66,7 +66,9 @@ transaction history provided by the bank. Find and save the institution_id of yo
 
 ### 3. Create Auth Link and authenticate with your bank
 Provide the institution_id. You get back a link which you need to copy to your browser and go through authentication 
-flow with your bank
+flow with your bank. By default, the authorization will allow you to fetch 90 days of your transaction history. You can 
+set the option `use_max_historical_days` to `True` in order to fetch longer transaction history. This is known to cause 
+issues sometimes, so in case you get an 500 error from the Gocardless API try an authorization with default 90 days.
 ```py
 ynab_api_import.create_auth_link(institution_id='<institution_id>')
 ```
@@ -95,10 +97,11 @@ ynab_api_import = YnabApiImport(resource_id='<resource_id>',
                                 account_id='<account_id>')
 ```
 ### Delete current bank authorization
-By default you can create only one bank authorization per reference. If you need to replace the authorization under your 
-current reference you can explicitly do that by calling the following function.
+By default you can create only one bank authorization per reference. If you need to replace the authorization under 
+your current reference you can explicitly do that by setting the `delete_current_auth` option when creating and auth 
+link.
 ```py
-ynab_api_import.delete_currrent_auth()
+ynab_api_import.create_auth_link(institution_id='<institution_id>', delete_current_auth=True)
 ```
 ### Show Logs
 The library logs information about the result of the methods on the 'INFO' level. If you want to see these logs 
@@ -111,7 +114,7 @@ logging.basicConfig(level='INFO')
 ```
 ### Testing your `memo_regex`
 You can test your `memo_regex` with a call to `test_memo_regex()`. The function will fetch transactions from your 
-bank account, apply the regex and output the old and new memo strings in a dict for inspection
+bank account, apply the regex and output the old and new memo strings in a dictionary for inspection.
 ```py
 ynab_api_import.test_memo_regex(memo_regex=r'<memo_regex')
 ```
