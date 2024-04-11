@@ -25,6 +25,7 @@ class YnabClient:
 		return len(r.json()['data']['transaction_ids'])
 
 	def fetch_balance(self) -> int:
-		r = requests.get(f"{YNAB_BASE_URL}/budgets/{self._budget_id}/accounts/{self._account_id}",)
+		r = requests.get(f"{YNAB_BASE_URL}/budgets/{self._budget_id}/accounts/{self._account_id}",
+						 headers=self._header)
 		r.raise_for_status()
 		return r.json()['data']['account']['cleared_balance']
