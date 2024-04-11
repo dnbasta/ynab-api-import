@@ -7,7 +7,7 @@ import yaml
 from nordigen import NordigenClient
 
 from ynabapiimport.requisitionhandler import RequisitionHandler
-from ynabapiimport.transactionfetcher import TransactionFetcher
+from ynabapiimport.accountclient import AccountClient
 from ynabapiimport.memocleaner import MemoCleaner
 from ynabapiimport.ynabclient import YnabClient
 
@@ -20,8 +20,8 @@ class YnabApiImport:
 		self._reference = reference
 		self._resource_id = resource_id
 		self._ynab_client = YnabClient(token=token, account_id=account_id, budget_id=budget_id)
-		self._gocardless_client = NordigenClient(secret_id=secret_id, secret_key=secret_key)
-		self._gocardless_client.generate_token()
+		self._api_client = NordigenClient(secret_id=secret_id, secret_key=secret_key)
+		self._api_client.generate_token()
 
 	@classmethod
 	def from_yaml(cls, path: str):
@@ -44,9 +44,9 @@ class YnabApiImport:
 		if startdate is None:
 			startdate = date.today() - timedelta(days=90)
 
-		tf = TransactionFetcher(client=self._gocardless_client, reference=self._reference,
-								resource_id=self._resource_id)
-		transactions = tf.fetch(startdate=startdate)
+		ac = AccountClient.from_api_client(client=self._api_client, reference=self._reference,
+									 resource_id=self._resource_id)
+		transactions = ac.fetch_transactions(startdate=startdate)
 
 		if memo_regex:
 			mc = MemoCleaner(memo_regex=memo_regex)
@@ -58,7 +58,7 @@ class YnabApiImport:
 
 	def create_auth_link(self, institution_id: str, use_max_historical_days: bool = False,
 						 delete_current_auth: bool = False) -> str:
-		rh = RequisitionHandler(client=self._gocardless_client, reference=self._reference)
+		rh = RequisitionHandler(client=self._api_client, reference=self._reference)
 		if delete_current_auth:
 			rh.delete_current_requisition()
 			self.logger.info(f'deleted auth for reference {self._reference}')
@@ -68,14 +68,15 @@ class YnabApiImport:
 		return auth_link
 
 	def fetch_institutions(self, countrycode: str) -> List[dict]:
-		rh = RequisitionHandler(client=self._gocardless_client, reference=self._reference)
+		rh = RequisitionHandler(client=self._api_client, reference=self._reference)
 		institutions = rh.get_institutions(countrycode=countrycode)
 		self.logger.info(f'fetched list with {len(institutions)} institutions for countrycode {countrycode}')
 		return institutions
 
 	def test_memo_regex(self, memo_regex: str) -> List[dict]:
-		tf = TransactionFetcher(client=self._gocardless_client, reference=self._reference, resource_id=self._resource_id)
-		transactions = tf.fetch(date.today() - timedelta(days=90))
+		ac = AccountClient.from_api_client(client=self._api_client, reference=self._reference,
+										   resource_id=self._resource_id)
+		transactions = ac.fetch_transactions(date.today() - timedelta(days=90))
 		mc = MemoCleaner(memo_regex=memo_regex)
 		r = [{t.memo: mc.clean(t).memo} for t in transactions]
 		self.logger.info(f'tested memo regex on {len(r)} transactions from {self._reference}')
