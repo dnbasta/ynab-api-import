@@ -6,7 +6,7 @@ from typing import List
 import yaml
 from nordigen import NordigenClient
 
-from ynabapiimport.exceptions import BalancesDontMatchError
+from ynabapiimport.models.exceptions import BalancesDontMatchError
 from ynabapiimport.requisitionhandler import RequisitionHandler
 from ynabapiimport.accountclient import AccountClient
 from ynabapiimport.memocleaner import MemoCleaner
