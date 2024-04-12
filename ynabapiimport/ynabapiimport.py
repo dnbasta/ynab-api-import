@@ -14,6 +14,9 @@ from ynabapiimport.ynabclient import YnabClient
 
 
 class YnabApiImport:
+	"""
+	Class which allows to connect to bank accounts via GoCardless API and import transactions into YNAB
+	"""
 
 	def __init__(self, secret_id: str, secret_key: str, token: str,
 				 reference: str, budget_id: str, account_id: str, resource_id: str = None) -> None:
@@ -28,6 +31,11 @@ class YnabApiImport:
 
 	@classmethod
 	def from_yaml(cls, path: str):
+		"""
+		Creates instance from provided yaml file
+		:param path: path to yaml configuration file
+		:return: instance of YnabApiImport
+		"""
 		with Path(path).open('r') as f:
 			config_dict = yaml.safe_load(f)
 
@@ -44,6 +52,12 @@ class YnabApiImport:
 					   resource_id=resource_id)
 
 	def import_transactions(self, startdate: date = None, memo_regex: str = None) -> int:
+		"""
+		Import bank transactions via GoCardless to YNAB. The method will only import booked transactions and ignore pending ones.
+		:param startdate: date from which to start importing. Will only work for up to max_history_days available for the bank. If not specified will fetch for last 90 days
+		:param memo_regex: regex pattern to parse memos from bank transactions
+		:return: count of processed transactions
+		"""
 		if startdate is None:
 			startdate = date.today() - timedelta(days=90)
 
@@ -71,6 +85,13 @@ class YnabApiImport:
 
 	def create_auth_link(self, institution_id: str, use_max_historical_days: bool = False,
 						 delete_current_auth: bool = False) -> str:
+		"""
+		Creates a link to authenticate access to specified bank through GoCardless. Link needs to be used in browser
+		:param institution_id: Gocardless id for your bank
+		:param use_max_historical_days: If set to True will create an auth link for the max_days specified in history for the bank
+		:param delete_current_auth: if set to True will delete currently active auth
+		:return: Link to authenticate access to bank through Gocardless
+		"""
 		rh = RequisitionHandler(client=self._api_client, reference=self._reference)
 		if delete_current_auth:
 			rh.delete_current_requisition()
@@ -81,15 +102,23 @@ class YnabApiImport:
 		return auth_link
 
 	def fetch_institutions(self, countrycode: str) -> List[dict]:
+		"""
+		Fetches institutions for specified country from GoCardless
+		:param countrycode: ISO2 country code
+		:return: List of available institutions in country with as with name, institution_id and max_history_days
+		"""
 		rh = RequisitionHandler(client=self._api_client, reference=self._reference)
 		institutions = rh.get_institutions(countrycode=countrycode)
 		self.logger.info(f'fetched list with {len(institutions)} institutions for countrycode {countrycode}')
 		return institutions
 
 	def test_memo_regex(self, memo_regex: str) -> List[dict]:
-		ac = AccountClient.from_api_client(client=self._api_client, reference=self._reference,
-										   resource_id=self._resource_id)
-		transactions = ac.fetch_transactions(date.today() - timedelta(days=90))
+		"""
+		Tests cleaning memos in transactions from bank with provided regex. Will test on bank transactions from last 90 days
+		:param memo_regex: Regex expression to use for cleaning memos
+		:return: list with `dict` which has original memo as key and cleaned memo as value
+		"""
+		transactions = self._account_client.fetch_transactions(date.today() - timedelta(days=90))
 		mc = MemoCleaner(memo_regex=memo_regex)
 		r = [{t.memo: mc.clean(t).memo} for t in transactions]
 		self.logger.info(f'tested memo regex on {len(r)} transactions from {self._reference}')
