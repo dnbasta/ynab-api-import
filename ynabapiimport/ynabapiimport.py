@@ -100,7 +100,7 @@ class YnabApiImport:
 		"""
 		Creates a link to authenticate access to specified bank through GoCardless. Link needs to be used in browser
 		:param institution_id: Gocardless id for your bank
-		:param use_max_historical_days: If set to True will create an auth link for the max_days specified in history for the bank
+		:param use_max_historical_days: If set to True will create an auth link for the max_days specified in history for the bank (might cause a 500 error with API if bank doesn't support for any reason)
 		:param delete_current_auth: if set to True will delete currently active auth
 		:return: Link to authenticate access to bank through Gocardless
 		:raises ReferenceNotValidError: if reference string contains illegal characters
