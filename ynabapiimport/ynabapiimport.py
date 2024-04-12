@@ -6,6 +6,7 @@ from typing import List
 import yaml
 from nordigen import NordigenClient
 
+from ynabapiimport.exceptions import BalancesDontMatchError
 from ynabapiimport.requisitionhandler import RequisitionHandler
 from ynabapiimport.accountclient import AccountClient
 from ynabapiimport.memocleaner import MemoCleaner
@@ -22,6 +23,8 @@ class YnabApiImport:
 		self._ynab_client = YnabClient(token=token, account_id=account_id, budget_id=budget_id)
 		self._api_client = NordigenClient(secret_id=secret_id, secret_key=secret_key)
 		self._api_client.generate_token()
+		self._account_client = AccountClient.from_api_client(client=self._api_client, reference=self._reference,
+										  resource_id=resource_id)
 
 	@classmethod
 	def from_yaml(cls, path: str):
@@ -44,9 +47,7 @@ class YnabApiImport:
 		if startdate is None:
 			startdate = date.today() - timedelta(days=90)
 
-		ac = AccountClient.from_api_client(client=self._api_client, reference=self._reference,
-									 resource_id=self._resource_id)
-		transactions = ac.fetch_transactions(startdate=startdate)
+		transactions = self._account_client.fetch_transactions(startdate=startdate)
 
 		if memo_regex:
 			mc = MemoCleaner(memo_regex=memo_regex)
@@ -55,6 +56,18 @@ class YnabApiImport:
 		i = self._ynab_client.insert(transactions)
 		self.logger.info(f"inserted {i} transactions for {self._reference}")
 		return i
+
+	def compare_balances(self):
+		"""
+		Compares balance variants for the account (e.g. expected, closingBooked) from API and from YNAB. The method
+		compares the plain balance values as well as the balances minus the sum of still pending transactions.
+		:raises BalancesDontMatchError: if none of the API returned balances for the account match with the one in YNAB
+		"""
+		ab, ap = self._account_client.fetch_balances()
+		yb = self._ynab_client.fetch_balance()
+		if yb not in ab.values() and yb not in [b - ap for b in ab.values()]:
+			raise BalancesDontMatchError({'api': ab, 'ynab': yb, 'pending': ap})
+		self.logger.info(f'balances match for {self._reference}')
 
 	def create_auth_link(self, institution_id: str, use_max_historical_days: bool = False,
 						 delete_current_auth: bool = False) -> str:

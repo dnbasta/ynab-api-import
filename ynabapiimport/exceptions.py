@@ -1,0 +1,3 @@
+
+class BalancesDontMatchError(Exception):
+	pass

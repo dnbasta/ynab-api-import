@@ -96,6 +96,11 @@ ynab_api_import = YnabApiImport(resource_id='<resource_id>',
                                 budget_id='<budget_id>',
                                 account_id='<account_id>')
 ```
+### Compare balances
+This method will fetch the available [balance variants](https://developer.gocardless.com/bank-account-data/balance) for your account from the API and compare them to the balance in YNAB. It compares the plain balance values as well as the balances minus the sum of still pending transactions. If none of them match it raises a `BalancesDontMatchError`
+```py
+ynab_api_import.compare_balances()
+```
 ### Delete current bank authorization
 By default you can create only one bank authorization per reference. If you need to replace the authorization under 
 your current reference you can explicitly do that by setting the `delete_current_auth` option when creating and auth 
