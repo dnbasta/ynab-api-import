@@ -22,14 +22,17 @@ class AccountClient:
 
 	def __init__(self, account_api: AccountApi):
 		self.account_api = account_api
+		self.pending = 0
 
 	def fetch_transactions(self, startdate: date) -> List[Transaction]:
 		transaction_dicts = self.account_api.get_transactions(date_from=date.strftime(startdate, '%Y-%m-%d'))
 		transactions = [Transaction.from_dict(t) for t in transaction_dicts['transactions']['booked']]
+		self.pending = sum([float(t['transactionAmount']['amount']) for t in transaction_dicts['transactions']['pending']])
 		return transactions
 
-	def fetch_balance(self) -> int:
-		balances = self.account_api.get_balances()
-		balance = next(b['balanceAmount']['amount'] for b in balances['balances']
-					   if b['balanceType'] == 'closingBooked')
-		return int(float(balance) * 1000)
+	def fetch_balances(self) -> (dict, int):
+		balances_dict = self.account_api.get_balances()
+		balances = {b['balanceType']: int(float(b['balanceAmount']['amount']) * 1000) for b in balances_dict['balances']}
+		return balances, self.pending
+
+

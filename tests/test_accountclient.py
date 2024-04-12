@@ -34,18 +34,20 @@ def test_fetch_balance():
 	mock_account_api = MagicMock()
 	mock_account_api.get_balances.return_value = dict(balances=[dict(balanceType='closingBooked', balanceAmount=dict(amount=1.00))])
 	ac = AccountClient(account_api=mock_account_api)
+	ac.pending = 100
 
 	# Act
-	balance = ac.fetch_balance()
+	balances, pending = ac.fetch_balances()
 
 	# Assert
-	assert balance == 1000
+	assert balances == {'closingBooked': 1000}
+	assert pending == 100
 
 
 def test_fetch_transactions():
 	# Arrange
 	mock_account_api = MagicMock()
-	mock_account_api.get_transactions.return_value = dict(transactions=dict(booked=[MagicMock()]))
+	mock_account_api.get_transactions.return_value = dict(transactions=dict(booked=[MagicMock()], pending=MagicMock()))
 	ac = AccountClient(account_api=mock_account_api)
 
 	# Act
