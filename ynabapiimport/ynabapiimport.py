@@ -20,6 +20,18 @@ class YnabApiImport:
 
 	def __init__(self, secret_id: str, secret_key: str, token: str,
 				 reference: str, budget_id: str, account_id: str, resource_id: str = None) -> None:
+		"""
+		:param secret_id: Secret id from GoCardless
+		:param secret_key: Secret Key from GoCardless
+		:param token: YNAB token
+		:param reference: self chosen reference string to identify connection in GoCardless
+		:param budget_id: YNAB budget id
+		:param account_id: YNAB account id
+		:param resource_id: GoCardless resource id to specify accounts in case multiple are available
+		:raises NoRequisitionError: if GoCardless connection is not valid
+		:raises NoAccountError: if no account is available in authorized GoCardless connection
+		:raises MultipleAccountsError: if multiple accounts are available in authorized GoCardless connection
+		"""
 		self.logger = self._set_up_logger()
 		self._reference = reference
 		self._resource_id = resource_id
@@ -91,6 +103,8 @@ class YnabApiImport:
 		:param use_max_historical_days: If set to True will create an auth link for the max_days specified in history for the bank
 		:param delete_current_auth: if set to True will delete currently active auth
 		:return: Link to authenticate access to bank through Gocardless
+		:raises ReferenceNotValidError: if reference string contains illegal characters
+		:raises ReferenceNotUniqueError: if existing connection already uses the reference
 		"""
 		rh = RequisitionHandler(client=self._api_client, reference=self._reference)
 		if delete_current_auth:
