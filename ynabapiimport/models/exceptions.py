@@ -18,3 +18,7 @@ class ReferenceNotUnique(Exception):
 
 class ReferenceNotValid(Exception):
 	pass
+
+
+class BalancesDontMatchError(Exception):
+	pass

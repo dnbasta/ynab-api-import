@@ -6,7 +6,7 @@ from typing import List
 import yaml
 from nordigen import NordigenClient
 
-from ynabapiimport.exceptions import BalancesDontMatchError
+from ynabapiimport.models.exceptions import BalancesDontMatchError
 from ynabapiimport.requisitionhandler import RequisitionHandler
 from ynabapiimport.accountclient import AccountClient
 from ynabapiimport.memocleaner import MemoCleaner
@@ -16,13 +16,28 @@ from ynabapiimport.ynabclient import YnabClient
 class YnabApiImport:
 	"""
 	Class which allows to connect to bank accounts via GoCardless API and import transactions into YNAB
+	:ivar reference: self chosen reference string to identify connection in GoCardless
+	:ivar resource_id: GoCardless resource id to specify accounts in case multiple are available
+	:ivar logger: Logger object which receives info messages from methods
 	"""
 
 	def __init__(self, secret_id: str, secret_key: str, token: str,
 				 reference: str, budget_id: str, account_id: str, resource_id: str = None) -> None:
+		"""
+		:param secret_id: Secret id from GoCardless
+		:param secret_key: Secret Key from GoCardless
+		:param token: YNAB token
+		:param reference: self chosen reference string to identify connection in GoCardless
+		:param budget_id: YNAB budget id
+		:param account_id: YNAB account id
+		:param resource_id: GoCardless resource id to specify accounts in case multiple are available
+		:raises NoRequisitionError: if GoCardless connection is not valid
+		:raises NoAccountError: if no account is available in authorized GoCardless connection
+		:raises MultipleAccountsError: if multiple accounts are available in authorized GoCardless connection
+		"""
 		self.logger = self._set_up_logger()
-		self._reference = reference
-		self._resource_id = resource_id
+		self.reference = reference
+		self.resource_id = resource_id
 		self._ynab_client = YnabClient(token=token, account_id=account_id, budget_id=budget_id)
 		self._api_client = NordigenClient(secret_id=secret_id, secret_key=secret_key)
 		self._api_client.generate_token()
@@ -88,9 +103,11 @@ class YnabApiImport:
 		"""
 		Creates a link to authenticate access to specified bank through GoCardless. Link needs to be used in browser
 		:param institution_id: Gocardless id for your bank
-		:param use_max_historical_days: If set to True will create an auth link for the max_days specified in history for the bank
+		:param use_max_historical_days: If set to True will create an auth link for the max_days specified in history for the bank (might cause a 500 error with API if bank doesn't support for any reason)
 		:param delete_current_auth: if set to True will delete currently active auth
 		:return: Link to authenticate access to bank through Gocardless
+		:raises ReferenceNotValidError: if reference string contains illegal characters
+		:raises ReferenceNotUniqueError: if existing connection already uses the reference
 		"""
 		rh = RequisitionHandler(client=self._api_client, reference=self._reference)
 		if delete_current_auth:

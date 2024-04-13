@@ -3,7 +3,7 @@ from unittest.mock import patch, MagicMock
 import pytest
 
 from ynabapiimport import YnabApiImport
-from ynabapiimport.exceptions import BalancesDontMatchError
+from ynabapiimport.models.exceptions import BalancesDontMatchError
 
 
 @patch('ynabapiimport.ynabapiimport.AccountClient')

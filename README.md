@@ -103,7 +103,7 @@ ynab_api_import.compare_balances()
 ```
 ### Delete current bank authorization
 By default you can create only one bank authorization per reference. If you need to replace the authorization under 
-your current reference you can explicitly do that by setting the `delete_current_auth` option when creating and auth 
+your current reference you can explicitly do that by setting the `delete_current_auth` option when creating an auth 
 link.
 ```py
 ynab_api_import.create_auth_link(institution_id='<institution_id>', delete_current_auth=True)
