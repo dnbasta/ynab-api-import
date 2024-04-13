@@ -41,8 +41,8 @@ class YnabApiImport:
 		self._ynab_client = YnabClient(token=token, account_id=account_id, budget_id=budget_id)
 		self._api_client = NordigenClient(secret_id=secret_id, secret_key=secret_key)
 		self._api_client.generate_token()
-		self._account_client = AccountClient.from_api_client(client=self._api_client, reference=self._reference,
-										  resource_id=resource_id)
+		self._account_client = AccountClient.from_api_client(client=self._api_client, reference=self.reference,
+										  resource_id=self.resource_id)
 
 	@classmethod
 	def from_yaml(cls, path: str):
@@ -83,7 +83,7 @@ class YnabApiImport:
 			transactions = [mc.clean(t) for t in transactions]
 
 		i = self._ynab_client.insert(transactions)
-		self.logger.info(f"inserted {i} transactions for {self._reference}")
+		self.logger.info(f"inserted {i} transactions for {self.reference}")
 		return i
 
 	def compare_balances(self):
@@ -96,7 +96,7 @@ class YnabApiImport:
 		yb = self._ynab_client.fetch_balance()
 		if yb not in ab.values() and yb not in [b - ap for b in ab.values()]:
 			raise BalancesDontMatchError({'api': ab, 'ynab': yb, 'pending': ap})
-		self.logger.info(f'balances match for {self._reference}')
+		self.logger.info(f'balances match for {self.reference}')
 
 	def create_auth_link(self, institution_id: str, use_max_historical_days: bool = False,
 						 delete_current_auth: bool = False) -> str:
@@ -109,13 +109,13 @@ class YnabApiImport:
 		:raises ReferenceNotValidError: if reference string contains illegal characters
 		:raises ReferenceNotUniqueError: if existing connection already uses the reference
 		"""
-		rh = RequisitionHandler(client=self._api_client, reference=self._reference)
+		rh = RequisitionHandler(client=self._api_client, reference=self.reference)
 		if delete_current_auth:
 			rh.delete_current_requisition()
-			self.logger.info(f'deleted auth for reference {self._reference}')
+			self.logger.info(f'deleted auth for reference {self.reference}')
 		auth_link = rh.create_requisition_auth_link(institution_id=institution_id,
 													use_max_historical_days=use_max_historical_days)
-		self.logger.info(f'created auth link for {institution_id} under reference {self._reference}')
+		self.logger.info(f'created auth link for {institution_id} under reference {self.reference}')
 		return auth_link
 
 	def fetch_institutions(self, countrycode: str) -> List[dict]:
@@ -124,7 +124,7 @@ class YnabApiImport:
 		:param countrycode: ISO2 country code
 		:return: List of available institutions in country with as with name, institution_id and max_history_days
 		"""
-		rh = RequisitionHandler(client=self._api_client, reference=self._reference)
+		rh = RequisitionHandler(client=self._api_client, reference=self.reference)
 		institutions = rh.get_institutions(countrycode=countrycode)
 		self.logger.info(f'fetched list with {len(institutions)} institutions for countrycode {countrycode}')
 		return institutions
@@ -138,7 +138,7 @@ class YnabApiImport:
 		transactions = self._account_client.fetch_transactions(date.today() - timedelta(days=90))
 		mc = MemoCleaner(memo_regex=memo_regex)
 		r = [{t.memo: mc.clean(t).memo} for t in transactions]
-		self.logger.info(f'tested memo regex on {len(r)} transactions from {self._reference}')
+		self.logger.info(f'tested memo regex on {len(r)} transactions from {self.reference}')
 		return r
 
 	@staticmethod
