@@ -16,6 +16,9 @@ from ynabapiimport.ynabclient import YnabClient
 class YnabApiImport:
 	"""
 	Class which allows to connect to bank accounts via GoCardless API and import transactions into YNAB
+	:ivar reference: self chosen reference string to identify connection in GoCardless
+	:ivar resource_id: GoCardless resource id to specify accounts in case multiple are available
+	:ivar logger: Logger object which receives info messages from methods
 	"""
 
 	def __init__(self, secret_id: str, secret_key: str, token: str,
@@ -33,8 +36,8 @@ class YnabApiImport:
 		:raises MultipleAccountsError: if multiple accounts are available in authorized GoCardless connection
 		"""
 		self.logger = self._set_up_logger()
-		self._reference = reference
-		self._resource_id = resource_id
+		self.reference = reference
+		self.resource_id = resource_id
 		self._ynab_client = YnabClient(token=token, account_id=account_id, budget_id=budget_id)
 		self._api_client = NordigenClient(secret_id=secret_id, secret_key=secret_key)
 		self._api_client.generate_token()
