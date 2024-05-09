@@ -31,9 +31,6 @@ class YnabApiImport:
 		:param budget_id: YNAB budget id
 		:param account_id: YNAB account id
 		:param resource_id: GoCardless resource id to specify accounts in case multiple are available
-		:raises NoRequisitionError: if GoCardless connection is not valid
-		:raises NoAccountError: if no account is available in authorized GoCardless connection
-		:raises MultipleAccountsError: if multiple accounts are available in authorized GoCardless connection
 		"""
 		self.logger = self._set_up_logger()
 		self.reference = reference
@@ -41,8 +38,11 @@ class YnabApiImport:
 		self._ynab_client = YnabClient(token=token, account_id=account_id, budget_id=budget_id)
 		self._api_client = NordigenClient(secret_id=secret_id, secret_key=secret_key)
 		self._api_client.generate_token()
-		self._account_client = AccountClient.from_api_client(client=self._api_client, reference=self.reference,
-										  resource_id=self.resource_id)
+
+	@property
+	def _account_client(self):
+		return AccountClient.from_api_client(client=self._api_client, reference=self.reference,
+									  resource_id=self.resource_id)
 
 	@classmethod
 	def from_yaml(cls, path: str):
@@ -72,10 +72,12 @@ class YnabApiImport:
 		:param startdate: date from which to start importing. Will only work for up to max_history_days available for the bank. If not specified will fetch for last 90 days
 		:param memo_regex: regex pattern to parse memos from bank transactions
 		:return: count of processed transactions
+		:raises NoRequisitionError: if GoCardless connection is not valid
+		:raises NoAccountError: if no account is available in authorized GoCardless connection
+		:raises MultipleAccountsError: if multiple accounts are available in authorized GoCardless connection
 		"""
 		if startdate is None:
 			startdate = date.today() - timedelta(days=90)
-
 		transactions = self._account_client.fetch_transactions(startdate=startdate)
 
 		if memo_regex:
@@ -91,6 +93,9 @@ class YnabApiImport:
 		Compares balance variants for the account (e.g. expected, closingBooked) from API and from YNAB. The method
 		compares the plain balance values as well as the balances minus the sum of still pending transactions.
 		:raises BalancesDontMatchError: if none of the API returned balances for the account match with the one in YNAB
+		:raises NoRequisitionError: if GoCardless connection is not valid
+		:raises NoAccountError: if no account is available in authorized GoCardless connection
+		:raises MultipleAccountsError: if multiple accounts are available in authorized GoCardless connection
 		"""
 		ab, ap = self._account_client.fetch_balances()
 		yb = self._ynab_client.fetch_balance()
