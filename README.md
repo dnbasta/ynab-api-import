@@ -2,6 +2,7 @@
 
 [![GitHub Release](https://img.shields.io/github/release/dnbasta/ynab-api-import?style=flat)]() 
 [![Github Release](https://img.shields.io/maintenance/yes/2100)]()
+[![Monthly downloads](https://img.shields.io/pypi/dm/ynab-api-import)]()
 
 [!["Buy Me A Coffee"](https://img.shields.io/badge/Buy_Me_A_Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/dnbasta)
 
