@@ -29,13 +29,15 @@ class RequisitionHandler:
 					raise NoRequisitionError(f"Requisition not valid. Current status: {[r['status'] for r in reqs]}'")
 
 	def create_requisition_auth_link(self, institution_id: str, use_max_historical_days: bool) -> str:
-		req_list = self._client.requisition.get_requisitions()['results']
+		# delete inactive requisitions
+		self.delete_inactive_requisitions(req_list=self._client.requisition.get_requisitions()['results'])
 
-		self.delete_inactive_requisitions(req_list=req_list)
+		# check uniqueness and validity of reference
+		req_list = self._client.requisition.get_requisitions()['results']
 		self.reference_is_unique(req_list=req_list)
 		self.reference_is_valid()
 
-		# get max days for institution
+		# set historical days to use
 		transaction_total_days = 90
 		if use_max_historical_days:
 			institution_dict = self._client.institution.get_institution_by_id(institution_id)
