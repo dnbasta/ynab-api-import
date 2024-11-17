@@ -10,6 +10,10 @@ from ynabapiimport.models.transaction import Transaction
 
 class AccountClient:
 
+	def __init__(self, account_api: AccountApi):
+		self.account_api = account_api
+		self.pending = 0
+
 	@classmethod
 	def from_api_client(cls, client: NordigenClient, reference: str, resource_id: str) -> "AccountClient":
 		af = AccountFetcher(client=client, reference=reference)
@@ -19,10 +23,6 @@ class AccountClient:
 			account_id = af.fetch()
 		account = client.account_api(id=account_id)
 		return cls(account_api=account)
-
-	def __init__(self, account_api: AccountApi):
-		self.account_api = account_api
-		self.pending = 0
 
 	def fetch_transactions(self, startdate: date) -> List[Transaction]:
 		transaction_dicts = self.account_api.get_transactions(date_from=date.strftime(startdate, '%Y-%m-%d'))
