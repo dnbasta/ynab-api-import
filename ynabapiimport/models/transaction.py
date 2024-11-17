@@ -36,7 +36,7 @@ class Transaction:
 		else:
 			transaction_date = datetime.strftime(datetime.now(), '%Y-%m-%d')
 
-		return cls(import_id=t_dict['internalTransactionId'],
+		return cls(import_id=t_dict['transactionId'],
 				   memo=memo,
 				   payee_name=payee,
 				   amount=int(float(t_dict['transactionAmount']['amount']) * 1000),
