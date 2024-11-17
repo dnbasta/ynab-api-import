@@ -14,7 +14,7 @@ from ynabapiimport.models.transaction import Transaction
 										{}])
 def test_from_dict_datetimes(mock_datetime, test_input):
 	mock_datetime.now.return_value = datetime(2024, 1,1)
-	transaction_dict = {'internalTransactionId': 'id',
+	transaction_dict = {'transactionId': 'id',
 						'creditorName': 'payee',
 						'transactionAmount': {'amount': '100'}}
 	transaction_dict = {**transaction_dict, **test_input}
